@@ -2,147 +2,32 @@
 import Container from "../../../components/container";
 import HeaderBlog from "../../../components/header-blog";
 import MoreStories from "../../../components/more-stories";
-import PostHeader from "../../../components/post-header";
-import PostBody from "../../../components/post-body";
+import { Post } from "../../../components/post";
 import SectionSeparator from "../../../components/section-separator";
-import { metaTagsFragment, responsiveImageFragment } from "../../../lib/fragments";
 import Layout from "../../../components/layout";
+import { getPostBySlug, getPosts } from "../../../features";
+import { getPostPaths } from "../../../utils";
 
 const { slug } = Astro.params
 
-const graphqlRequest = {
-  query: `
-      query PostBySlug($slug: String) {
-        site: _site {
-          favicon: faviconMetaTags {
-            ...metaTagsFragment
-          }
-        }
-        post(filter: {slug: {eq: $slug}}) {
-          seo: _seoMetaTags {
-            ...metaTagsFragment
-          }
-          title
-          slug
-          content {
-            value
-            blocks {
-              __typename
-              ...on ImageBlockRecord {
-                id
-                image {
-                  responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-                    ...responsiveImageFragment
-                  }
-                }
-              }
-            }
-          }
-          date
-          ogImage: coverImage{
-            url(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 })
-          }
-          coverImage {
-            responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-              ...responsiveImageFragment
-            }
-          }
-          author {
-            name
-            picture {
-              responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 100, h: 100, sat: -100}) {
-                ...responsiveImageFragment
-              }
-            }
-          }
-        }
+const previewMode = true
 
-        morePosts: allPosts(orderBy: date_DESC, first: 2, filter: {slug: {neq: $slug}}) {
-          title
-          slug
-          excerpt
-          date
-          coverImage {
-            responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-              ...responsiveImageFragment
-            }
-          }
-          author {
-            name
-            picture {
-              responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 100, h: 100, sat: -100}) {
-                ...responsiveImageFragment
-              }
-            }
-          }
-        }
-      }
-      
-      ${responsiveImageFragment}
-      ${metaTagsFragment}
-    `,
-  variables: {
-    slug
-  },
-};
+const postsResult = await getPostBySlug(previewMode)(slug as string);
 
-const response = await fetch(
-  'https://graphql.datocms.com/',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
-      'X-Include-Drafts': 'true'
-    },
-    body: JSON.stringify(
-      graphqlRequest
-    ),
-  })
-
-const parsedResponse = await response.json()
-
-const post = parsedResponse.data.post
-
-const morePosts = parsedResponse.data.morePosts
+const { post, morePosts } = postsResult;
 
 export async function getStaticPaths() {
-  const slugsResponse = await fetch(
-    'https://graphql.datocms.com/preview',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
-      },
-      body: JSON.stringify(
-        {
-          query: `{allPosts {
-    slug
-  }}`}
-      ),
-    }
-  )
-  const parsedSlugResponse = await slugsResponse.json()
+  const posts = await getPosts(true);
 
-  const pathsArray = []
-  for (const slug of parsedSlugResponse.data.allPosts) {
-    pathsArray.push({ params: slug })
-  }
-  return pathsArray;
+  return getPostPaths(posts);
 }
 ---
 
-<Layout preview={true} currentSlug={`/posts/${slug}`}>
+<Layout preview={previewMode} currentSlug={`posts/${slug}`}>
   <Container>
-    <HeaderBlog preview={true} />
-    <article>
-      <PostHeader title={post.title} coverImage={post.coverImage} date={post.date} author={post.author} />
-      <PostBody content={post.content} />
-    </article>
+    <HeaderBlog preview={previewMode} />
+    <Post post={post} />
     <SectionSeparator />
-    <MoreStories preview={true} posts={morePosts} />
+    <MoreStories preview={previewMode} posts={morePosts} />
   </Container>
 </Layout>

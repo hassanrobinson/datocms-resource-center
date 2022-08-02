@@ -1,6 +1,7 @@
 import Avatar from "./avatar";
 import Date from "./date";
 import CoverImage from "./cover-image";
+import { getPostUrl } from "../utils";
 
 export default function HeroPost({
   title,
@@ -9,15 +10,17 @@ export default function HeroPost({
   excerpt,
   author,
   slug,
-  preview
+  preview,
 }) {
-  const hrefLink = preview ? `/preview/posts/${slug}` : `/posts/${slug}`;
+  const hrefLink = getPostUrl(preview)(slug);
+
   return (
     <section>
       <div className="mb-8 md:mb-16">
         <CoverImage
           title={title}
           responsiveImage={coverImage.responsiveImage}
+          preview={preview}
           slug={slug}
         />
       </div>

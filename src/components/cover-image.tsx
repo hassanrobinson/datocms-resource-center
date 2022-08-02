@@ -1,8 +1,11 @@
 import { Image } from "react-datocms";
 import cn from "classnames";
+import { getPostUrl } from "../utils";
 // import Link from "next/link";
 
-export default function CoverImage({ title, responsiveImage, slug }) {
+export default function CoverImage({ title, responsiveImage, preview, slug }) {
+  const hrefLink = getPostUrl(preview)(slug);
+
   const image = (
     <Image
       lazyLoad={false}
@@ -18,7 +21,7 @@ export default function CoverImage({ title, responsiveImage, slug }) {
   return (
     <div className="-mx-5 sm:mx-0">
       {slug ? (
-        <a href={`/posts/${slug}`} aria-label={title}>
+        <a href={hrefLink} aria-label={title}>
           {image}
         </a>
       ) : (

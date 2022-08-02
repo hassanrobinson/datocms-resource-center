@@ -63,17 +63,16 @@ const parsedResponse = await response.json()
 
 const posts = parsedResponse.data.allPosts
 
-const heroPost = posts.shift()
-const morePosts = posts
-
+const heroPost = posts[0]
+const morePosts = posts.slice(1)
 ---
 
 <>
   <Layout preview={false} currentSlug={""}>
     <Container>
       <Intro />
-      <HeroPost preview={false} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date} author={heroPost.author}
-        slug={heroPost.slug} excerpt={heroPost.excerpt} />
+      <HeroPost preview={false} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date}
+        author={heroPost.author} slug={heroPost.slug} excerpt={heroPost.excerpt} />
       <MoreStories preview={false} posts={morePosts} />
     </Container>
   </Layout>

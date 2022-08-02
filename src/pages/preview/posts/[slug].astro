@@ -11,7 +11,7 @@ import Layout from "../../../components/layout";
 const { slug } = Astro.params
 
 const graphqlRequest = {
-    query: `
+  query: `
       query PostBySlug($slug: String) {
         site: _site {
           favicon: faviconMetaTags {
@@ -77,17 +77,16 @@ const graphqlRequest = {
           }
         }
       }
-
+      
       ${responsiveImageFragment}
       ${metaTagsFragment}
     `,
-  
-    variables: {
-      slug
-    },
-  };
+  variables: {
+    slug
+  },
+};
 
-  const response = await fetch(
+const response = await fetch(
   'https://graphql.datocms.com/',
   {
     method: 'POST',
@@ -95,41 +94,43 @@ const graphqlRequest = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
+      'X-Include-Drafts': 'true'
     },
     body: JSON.stringify(
       graphqlRequest
     ),
   })
 
-  const parsedResponse = await response.json()
+const parsedResponse = await response.json()
 
-  const post = parsedResponse.data.post
+const post = parsedResponse.data.post
 
-  const morePosts = parsedResponse.data.morePosts
+const morePosts = parsedResponse.data.morePosts
 
 export async function getStaticPaths() {
   const slugsResponse = await fetch(
-  'https://graphql.datocms.com/preview',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
-    },
-    body: JSON.stringify(
-      {query: `{allPosts {
+    'https://graphql.datocms.com/preview',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
+      },
+      body: JSON.stringify(
+        {
+          query: `{allPosts {
     slug
   }}`}
-    ),
-  }
-)
-const parsedSlugResponse = await slugsResponse.json()
+      ),
+    }
+  )
+  const parsedSlugResponse = await slugsResponse.json()
 
-const pathsArray = []
-for(const slug of parsedSlugResponse.data.allPosts){
-  pathsArray.push({params: slug})
-}
+  const pathsArray = []
+  for (const slug of parsedSlugResponse.data.allPosts) {
+    pathsArray.push({ params: slug })
+  }
   return pathsArray;
 }
 ---
@@ -138,12 +139,7 @@ for(const slug of parsedSlugResponse.data.allPosts){
   <Container>
     <HeaderBlog preview={true} />
     <article>
-      <PostHeader
-        title={post.title}
-        coverImage={post.coverImage}
-        date={post.date}
-        author={post.author}
-      />
+      <PostHeader title={post.title} coverImage={post.coverImage} date={post.date} author={post.author} />
       <PostBody content={post.content} />
     </article>
     <SectionSeparator />

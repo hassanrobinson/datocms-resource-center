@@ -53,6 +53,7 @@ const response = await fetch(
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': `Bearer ${import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN}`,
+      'X-Include-Drafts': 'true'
     },
     body: JSON.stringify(
       graphqlRequest
@@ -63,17 +64,16 @@ const parsedResponse = await response.json()
 
 const posts = parsedResponse.data.allPosts
 
-const heroPost = posts.shift()
-const morePosts = posts
-
+const heroPost = posts[0]
+const morePosts = posts.slice(1)
 ---
 
 <>
   <Layout preview={true} currentSlug={"/"}>
     <Container>
       <Intro />
-      <HeroPost preview={true} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date} author={heroPost.author}
-        slug={heroPost.slug} excerpt={heroPost.excerpt} />
+      <HeroPost preview={true} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date}
+        author={heroPost.author} slug={heroPost.slug} excerpt={heroPost.excerpt} />
       <MoreStories preview={true} posts={morePosts} />
     </Container>
   </Layout>

@@ -5,19 +5,19 @@ import MoreStories from "../../components/more-stories";
 import { Post } from "../../components/post";
 import SectionSeparator from "../../components/section-separator";
 import Layout from "../../components/layout";
-import { getPostBySlug, getPosts } from "../../features";
 import { getPostPaths } from "../../utils";
+import { DatoCMSApi } from "../../lib/dato-cms";
 
 const { slug } = Astro.params
 
 const previewMode = false
 
-const postsResult = await getPostBySlug(previewMode)(slug as string);
+const postsResult = await DatoCMSApi.getPostBySlug(previewMode)(slug as string);
 
 const { post, morePosts } = postsResult;
 
 export async function getStaticPaths() {
-  const posts = await getPosts(false);
+  const posts = await DatoCMSApi.getPosts(false);
 
   return getPostPaths(posts);
 }

@@ -13,7 +13,7 @@ export const getPostPaths = (posts: any[]) => {
   let paths = [];
 
   posts.map(({ slug }) => {
-    paths = [...paths, { params: slug }];
+    paths = [...paths, { params: { slug } }];
   });
 
   return paths;

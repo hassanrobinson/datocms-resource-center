@@ -1,22 +1,21 @@
-import Container from "./container";
+import { Container } from "./container";
 import cn from "classnames";
 
-export default function Alert({ preview, currentSlug }) {
-
+export const Alert = ({ previewMode, currentSlug }) => {
   return (
     <div
       className={cn("border-b", {
-        "bg-accent-7 border-accent-7 text-white": preview,
-        "bg-accent-1 border-accent-2": !preview,
+        "bg-accent-7 border-accent-7 text-white": previewMode,
+        "bg-accent-1 border-accent-2": !previewMode,
       })}
     >
       <Container>
         <div className="py-2 text-center text-sm">
-          {preview ? (
+          {previewMode ? (
             <>
               This is page is showing draft content.{" "}
               <a
-                href={currentSlug}
+                href={`/${currentSlug}`}
                 className="underline hover:text-cyan duration-200 transition-colors"
               >
                 Click here
@@ -39,4 +38,4 @@ export default function Alert({ preview, currentSlug }) {
       </Container>
     </div>
   );
-}
+};

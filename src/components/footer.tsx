@@ -1,6 +1,6 @@
-import Container from "./container";
+import { Container } from "./container";
 
-export default function Footer() {
+export const Footer = () => {
   return (
     <footer className="bg-accent-1 border-t border-accent-2">
       <Container>
@@ -26,4 +26,4 @@ export default function Footer() {
       </Container>
     </footer>
   );
-}
+};

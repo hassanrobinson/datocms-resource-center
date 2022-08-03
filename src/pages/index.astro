@@ -1,5 +1,5 @@
 ---
-import Container from "../components/container";
+import { Container } from "../components/container";
 import HeroPost from "../components/hero-post";
 import Intro from "../components/intro.astro";
 import Layout from "../components/layout";
@@ -68,7 +68,7 @@ const morePosts = posts.slice(1)
 ---
 
 <>
-  <Layout preview={false} currentSlug={""}>
+  <Layout previewMode={false} currentSlug={""}>
     <Container>
       <Intro />
       <HeroPost preview={false} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date}

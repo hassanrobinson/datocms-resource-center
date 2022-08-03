@@ -1,5 +1,5 @@
 ---
-import Container from "../../components/container";
+import { Container } from "../../components/container";
 import HeaderBlog from "../../components/header-blog";
 import MoreStories from "../../components/more-stories";
 import { Post } from "../../components/post";
@@ -17,13 +17,13 @@ const postsResult = await getPostBySlug(previewMode)(slug as string);
 const { post, morePosts } = postsResult;
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const posts = await getPosts(false);
 
   return getPostPaths(posts);
 }
 ---
 
-<Layout preview={previewMode} currentSlug={`posts/${slug}`}>
+<Layout previewMode={previewMode} currentSlug={`posts/${slug}`}>
   <Container>
     <HeaderBlog preview={previewMode} />
     <Post post={post} />

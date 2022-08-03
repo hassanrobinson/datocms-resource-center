@@ -1,33 +1,62 @@
 import { metaTagsFragment, responsiveImageFragment } from "../lib/fragments";
 
-export const getPosts = async (previewMode = false) => {
-  const getPostsQuery = `{
+type DatoCMSHeaders = {
+  "Content-Type": "application/json";
+  Accept: "application/json";
+  Authorization: string;
+  "X-Include-Drafts"?: "true";
+};
+
+type DatoCMSIncludeDraftsHeader = { "X-Include-Drafts": "true" };
+
+type GetDatoCMSHeaders = (previewMode: boolean) => DatoCMSHeaders;
+
+type GetPosts = (previewMode: boolean) => Promise<any>;
+
+type GetPostBySlug = (previewMode: boolean) => (slug: string) => Promise<any>;
+
+const _getDatoCMSHeaders =
+  (headers: DatoCMSHeaders) =>
+  (includeDraftsHeader: DatoCMSIncludeDraftsHeader) =>
+  (previewMode = false) =>
+    previewMode ? { ...headers, ...includeDraftsHeader } : headers;
+
+const getDatoCMSHeaders: GetDatoCMSHeaders = _getDatoCMSHeaders({
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  Authorization: `Bearer ${
+    import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN
+  }`,
+})({
+  "X-Include-Drafts": "true",
+});
+
+const _getPosts =
+  (getDatoCMSHeaders: GetDatoCMSHeaders) =>
+  async (previewMode = false) => {
+    const getPostsQuery = {
+      query: `{
     allPosts {
       slug
     }
-  }`;
+  }`,
+    };
 
-  const slugsResponse = await fetch("https://graphql.datocms.com", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${
-        import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN
-      }`,
-      "X-Include-Drafts": `${previewMode}`,
-    },
-    body: JSON.stringify({ getPostsQuery }),
-  });
+    const headers = getDatoCMSHeaders(previewMode);
 
-  const {
-    data: { allPosts },
-  } = await slugsResponse.json();
+    const slugsResponse = await fetch("https://graphql.datocms.com", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(getPostsQuery),
+    });
 
-  return allPosts;
-};
+    const { data } = await slugsResponse.json();
 
-export const getPostBySlug =
+    return data.allPosts;
+  };
+
+const _getPostBySlug =
+  (getDatoCMSHeaders: GetDatoCMSHeaders) =>
   (previewMode = false) =>
   async (slug: string) => {
     const graphqlRequest = {
@@ -106,16 +135,11 @@ export const getPostBySlug =
       },
     };
 
+    const headers = getDatoCMSHeaders(previewMode);
+
     const response = await fetch("https://graphql.datocms.com", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${
-          import.meta.env.ASTRO_EXAMPLE_CMS_DATOCMS_API_TOKEN
-        }`,
-        "X-Include-Drafts": `${previewMode}`,
-      },
+      headers,
       body: JSON.stringify(graphqlRequest),
     });
 
@@ -128,3 +152,7 @@ export const getPostBySlug =
       morePosts,
     };
   };
+
+export const getPosts: GetPosts = _getPosts(getDatoCMSHeaders);
+
+export const getPostBySlug: GetPostBySlug = _getPostBySlug(getDatoCMSHeaders);

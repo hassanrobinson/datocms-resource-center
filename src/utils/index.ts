@@ -5,7 +5,7 @@ const _getPostUrl =
   (slug: string) =>
     preview
       ? `/${previewPathName}/${postPathName}/${slug}`
-      : `${postPathName}/${slug}`;
+      : `/${postPathName}/${slug}`;
 
 export const getPostUrl = _getPostUrl("preview")("posts");
 

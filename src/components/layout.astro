@@ -1,0 +1,16 @@
+---
+import { Alert } from "./alert";
+import { Footer } from "./footer";
+
+const { previewMode } = Astro.props;
+---
+
+<>
+  <Alert previewMode={previewMode} client:load />
+  <div class="min-h-screen">
+    <main>
+      <slot />
+    </main>
+  </div>
+  <Footer />
+</>

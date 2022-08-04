@@ -4,7 +4,7 @@ import HeaderBlog from "../../components/header-blog";
 import MoreStories from "../../components/more-stories";
 import { Post } from "../../components/post";
 import SectionSeparator from "../../components/section-separator";
-import Layout from "../../components/layout";
+import Layout from "../../components/layout.astro";
 import { getPostPaths } from "../../utils";
 import { DatoCMSApi } from "../../lib/dato-cms";
 
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout previewMode={previewMode} currentSlug={`posts/${slug}`}>
+<Layout previewMode={previewMode}>
   <Container>
     <HeaderBlog preview={previewMode} />
     <Post post={post} />

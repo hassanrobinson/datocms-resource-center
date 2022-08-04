@@ -2,7 +2,7 @@
 import { Container } from "../components/container";
 import HeroPost from "../components/hero-post";
 import Intro from "../components/intro.astro";
-import Layout from "../components/layout";
+import Layout from "../components/layout.astro";
 import MoreStories from "../components/more-stories";
 import { metaTagsFragment, responsiveImageFragment } from "../lib/dato-cms/graphql-fragments";
 
@@ -68,7 +68,7 @@ const morePosts = posts.slice(1)
 ---
 
 <>
-  <Layout previewMode={false} currentSlug={""}>
+  <Layout previewMode={false}>
     <Container>
       <Intro />
       <HeroPost preview={false} title={heroPost.title} coverImage={heroPost.coverImage} date={heroPost.date}
